@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neon Racing</title>
+<style>
+body {
+  background:#101020;
+  color:white;
+  text-align:center;
+  font-family:Arial;
+}
+h1 {color:#00f5ff}
+#road {
+  width:280px;
+  height:430px;
+  margin:auto;
+  background:#292936;
+  border:4px solid #00eaff;
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+}
+#car,#enemy,#coin {
+  position:absolute;
+  font-size:36px;
+}
+#car {bottom:15px;left:120px}
+#enemy {top:-50px;left:40px}
+#coin {top:-150px;left:170px}
+button {
+  padding:13px 20px;
+  margin:7px;
+  border:0;
+  border-radius:12px;
+  background:#00d9ff;
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<h1>⚡ NEON RACING ⚡</h1>
+<h2>Score: <span id="score">0</span></h2>
+
+<div id="road">
+  <div id="car">🏎️</div>
+  <div id="enemy">🚙</div>
+  <div id="coin">🪙</div>
+</div>
+
+<button onclick="move(-1)">⬅️ LEFT</button>
+<button onclick="move(1)">RIGHT ➡️</button>
+<br>
+<button onclick="startGame()">START GAME</button>
+
+<p id="msg">Avoid cars and collect coins!</p>
+
+<script>
+let x=120, y=-50, cy=-150;
+let score=0, playing=false, timer;
+
+const car=document.getElementById("car");
+const enemy=document.getElementById("enemy");
+const coin=document.getElementById("coin");
+const road=document.getElementById("road");
+
+function move(dir) {
+ if(!playing) return;
+ x=Math.max(5,Math.min(235,x+dir*35));
+ car.style.left=x+"px";
+}
+
+function startGame() {
+ clearInterval(timer);
+ x=120; y=-50; cy=-150; score=0;
+ playing=true;
+ car.style.left=x+"px";
+ enemy.style.top=y+"px";
+ coin.style.top=cy+"px";
+ document.getElementById("score").innerText=0;
+ document.getElementById("msg").innerText="Race started!";
+ timer=setInterval(update,35);
+}
+
+function update() {
+ y+=5;
+ cy+=4;
+
+ if(y>430) {
+   y=-50;
+   enemy.style.left=[20,120,220][Math.floor(Math.random()*3)]+"px";
+ }
+
+ if(cy>430) {
+   cy=-100;
+   coin.style.left=[30,120,210][Math.floor(Math.random()*3)]+"px";
+ }
+
+ enemy.style.top=y+"px";
+ coin.style.top=cy+"px";
+
+ let ex=parseInt(enemy.style.left);
+ let cx=parseInt(coin.style.left);
+
+ if(y>340 && y<405 && Math.abs(ex-x)<35) {
+   playing=false;
+   clearInterval(timer);
+   document.getElementById("msg").innerText="Game Over! Score: "+score;
+   return;
+ }
+
+ if(cy>340 && cy<405 && Math.abs(cx-x)<35) {
+   score+=10;
+   cy=-100;
+   document.getElementById("score").innerText=score;
+ }
+}
+
+document.addEventListener("keydown",e=>{
+ if(e.key==="ArrowLeft") move(-1);
+ if(e.key==="ArrowRight") move(1);
+});
+</script>
+</body>
+</html>
